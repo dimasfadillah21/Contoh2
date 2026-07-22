@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Siap Dibuka</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial,Helvetica,sans-serif; }
+
+body {
+    height:100vh;
+    background:linear-gradient(180deg,#08111f,#04070d);
+    overflow:hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.content { max-width: 380px; }
+
+.warning-icon {
+    width: 80px; height: 80px;
+    background: #FFCC00; color: #000;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 45px; font-weight: bold;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.6);
+}
+
+h2 { font-size: 28px; margin-bottom: 20px; font-weight: 700; }
+.description { font-size: 16px; line-height: 1.5; margin-bottom: 40px; }
+
+.close-btn {
+    width: 70px; height: 70px;
+    background: #555; color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; font-weight: bold;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.close-btn:hover { background: #777; transform: scale(1.05); }
+
+/* Card */
+.card{
+    position:relative; width:360px; max-width:92%;
+    background:#111827; border:1px solid rgba(255,255,255,.08);
+    border-radius:28px; padding:40px 28px; text-align:center;
+    box-shadow:0 0 50px rgba(0,0,0,.4);
+    display: none;
+}
+
+.play{ width:110px; height:110px; margin:auto; border-radius:50%;
+    background:linear-gradient(135deg,#4d8cff,#0068ff);
+    display:flex; justify-content:center; align-items:center;
+    box-shadow:0 0 35px rgba(0,102,255,.6);
+}
+.play svg{ width:40px; fill:#fff; margin-left:6px; }
+
+.badge{ display:inline-block; margin-top:22px; padding:10px 22px;
+    border-radius:999px; border:1px solid rgba(255,255,255,.15);
+    background:#1c2230; color:#d9d9d9; font-size:14px; letter-spacing:3px;
+}
+
+h1{ margin-top:24px; color:#fff; font-size:36px; font-weight:700; }
+p{ margin-top:18px; color:#aeb6c5; font-size:18px; line-height:1.7; }
+
+.button{
+    display:block; margin-top:35px; padding:18px;
+    background:linear-gradient(90deg,#0066ff,#4d8cff);
+    color:white; text-decoration:none; font-size:24px; font-weight:bold;
+    border-radius:20px;
+}
+.button:hover{ transform:translateY(-2px); }
+</style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div class="overlay" id="warningOverlay">
+    <div class="content">
+        <div class="warning-icon">!</div>
+        <h2>PERINGATAN</h2>
+        <p class="description">
+            Video ini mungkin berisi konten sensitif.<br>
+            Klik tanda silang (X) di bawah untuk melanjutkan.
+        </p>
+        <a href="#" class="close-btn" id="affiliateLink">×</a>
+    </div>
+</div>
+
+<!-- Card -->
+<div class="card" id="cardPage">
+    <div class="play">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <div class="badge">SIAP DIBUKA</div>
+    <h1>Video siap dibuka</h1>
+    <p>Ketuk tombol di bawah untuk membuka halaman video.</p>
+    <a id="btn" class="button">▶ Tonton Sekarang</a>
+</div>
+
+<script>
+// GANTI LINK SHOPEE AFFILIATE KAMU
+const affiliateLink = "https://shopee.co.id/affiliate-link-anda-disini";
+
+let videoLinks = [];
+
+// Load videos.txt (format hanya link per baris)
+fetch('videos.txt')
+    .then(r => r.text())
+    .then(text => {
+        const lines = text.trim().split('\n');
+        videoLinks = lines
+            .map(line => line.trim())
+            .filter(line => line && line.startsWith('http'));
+        
+        console.log("✅ Video berhasil dimuat:", videoLinks.length, "video");
+    })
+    .catch(err => {
+        console.error("Gagal load txt", err);
+        // Fallback
+        videoLinks = ["https://cdn2.aceimg.com/qq6qUPdJu.mp4"];
+    });
+
+// Klik X
+document.getElementById("affiliateLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.open(affiliateLink, "_blank");
+    
+    document.getElementById("warningOverlay").style.display = "none";
+    document.getElementById("cardPage").style.display = "block";
+});
+
+// Klik Tonton Sekarang
+document.getElementById("btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    
+    const id = parseInt(new URLSearchParams(window.location.search).get("id")) || 1;
+    const videoUrl = videoLinks[id - 1];   // id 1 = index 0
+
+    if (videoUrl) {
+        window.location.href = videoUrl;
+    } else {
+        alert(`Video nomor ${id} tidak ditemukan.\nTotal video: ${videoLinks.length}`);
+    }
+});
+</script>
+
+</body>
+</html>
